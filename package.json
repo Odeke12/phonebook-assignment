@@ -1,0 +1,31 @@
+{
+  "name": "tdd2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Odeke12/phonebook-assignment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Odeke12/phonebook-assignment/issues"
+  },
+  "homepage": "https://github.com/Odeke12/phonebook-assignment#readme",
+  "dependencies": {
+    "chai": "^4.3.6",
+    "chai-http": "^4.3.0",
+    "express": "^4.17.3",
+    "mocha": "^9.2.1",
+    "mongodb": "^4.4.0",
+    "mongoose": "^6.2.3",
+    "nodemon": "^2.0.15",
+    "sinon": "^13.0.1"
+  }
+}
