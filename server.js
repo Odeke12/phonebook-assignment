@@ -63,7 +63,7 @@ const contacts = []
                 sendMessage(res,200,"Name already exists")  
                 check = true
             }else if(contact.phone_number == phone_number){
-                sendMessage(res,200,"Phone number already exists")  
+                sendMessage(res,200,{message:"Phone number already exists"})  
                 check = true
             }
         })
@@ -74,10 +74,10 @@ const contacts = []
 
     })
 
-    app.post('/search/:id',(req,res) => {
+    app.get('/search/:id',(req,res) => {
         const search_results = []
         if(contacts.length == 0){
-            sendMessage(res,200,"Cannot search an empty phone book") 
+            sendMessage(res,400,"Cannot search an empty phone book") 
         }else{
         contacts.forEach(contact => {
             if(contact.first_name == req.params.id){
@@ -90,9 +90,9 @@ const contacts = []
         })
     }
     if(search_results.length == 0){
-        sendMessage(res,401,"No search results")
+        sendMessage(res,401,{message:"No search results"})
     }else{
-        sendMessage(res,200,search_results)
+        sendMessage(res,200,{message: "Contact found", search_results })
     }
 })
 
@@ -102,13 +102,46 @@ app.delete('/remove/:id', (req,res) => {
         sendMessage(res,200,"Empty phone book") 
     }else{
     contacts.forEach((contact, index) => {
-        if(contact.first_name == id || contact.last_name == id || contact.phone_number == id){
+        if(contact.phone_number == id){
             // delete contacts[index]
             contacts.splice(index, 1)
-            sendMessage(res,401,"Contact removed")
+            sendMessage(res,200,{message:"Contact removed"})
         }else{
-            sendMessage(res,401,"Contact does not exist")
+            sendMessage(res,401,{message:"Contact does not exist"})
         }
+    })
+}
+})
+
+app.put('/update/:id', (req,res) => {
+    number = req.params.id
+    const {first_name,last_name, phone_number} = req.body
+    if(first_name == undefined || last_name == undefined || phone_number == undefined){
+        sendMessage(res,500,"Please enter the contact details")
+    }
+    if(typeof(first_name)!= "string" || typeof(last_name)!= "string"){
+        sendMessage(res,500,"Please provide a valid name")
+    }
+    if(contacts.length == 0){
+        sendMessage(res,200,{message:"Empty phone book"}) 
+    }else{
+    contacts.forEach(contact => {
+        if(contact.phone_number == number){
+        if(contact.first_name == first_name && contact.last_name == last_name){
+            sendMessage(res,200,"Name already exists")  
+            check = true
+        }else if(contact.phone_number == phone_number){
+            sendMessage(res,200,{message:"Phone number exists"})  
+        } else{
+            contact.first_name = first_name
+            contact.last_name = last_name
+            contact.phone_number = phone_number
+            sendMessage(res,200,{message:"Contact editted", contact})  
+        }    
+        }else{
+            sendMessage(res,200,{message:"Phone number does not exist"})  
+        }
+    
     })
 }
 })
