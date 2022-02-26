@@ -81,7 +81,7 @@ describe('POST ', () => {
             contact.should.have.property('last_name')
             contact.should.have.property('phone_number')
             // response.body.should.have.property('message').eql('Book successfully added!');
-            response.body.should.have.property('message').eql('Student successfully added!');
+            // response.body.should.have.property('message').to.not.eql('Phone number already exists');
             response.should.have.status(500);
 
         done();
@@ -101,55 +101,109 @@ describe('POST ', () => {
         done();
         })
     });
-
-})
-
-// describe('DELETE STUDENT ', () => {
-//     it('Should delete a student', (done) => {
-
-//         chai
-//         .request(app)
-//         .post('/api/students/delete/2')
-//         // .type('form')
-//         .end((err, response) => {
-//             // response.body.should.have.property('message').eql('Student successfully added!');
-//             response.should.have.status(400);
-
-//         done();
-//         })
-//     });
-
-// })
-
-describe('UPDATE STUDENT ', () => {
-    it('Should not update non existing student', (done) => {
-        const student = {
-            '_method': 'post',
-            first_name : "Timothy",
-            last_name : "Odongo",
-            reg_no : "18/U/23423/PS",
-            age: 12,
-            stclass: "P6"
+    it('It should not post a phone number that exists', (done) => {
+        const contact = {
+            first_name : "Odeke",
+            last_name : "Trevor",
+            phone_number : "+256771419370",
         }
         chai
         .request(app)
-        .post('/students/update/2')
-        .send(student)
-        .type('form')
+        .post('/')
+        .send(contact)
+        .type('json')
         .end((err, response) => {
+    
+    
+            contact.should.have.property('first_name')
+            contact.should.have.property('last_name')
+            contact.should.have.property('phone_number')
+            // response.body.should.have.property('message').eql('Book successfully added!');
+            response.body.should.have.property('message').not.eql('Phone number already exists');
+            response.should.have.status(200);
+    
+        done();
+        })
+    });
 
-            // student.should.have.property('first_name')
-            // student.should.have.property('last_name')
-            // student.should.have.property('reg_no')
-            // student.should.have.property('age')
-            // console.log(response.body)
-            // response.should.have.property('message').eql('Student does not exist');
-            response.should.have.status(400);
+})
+
+describe('SEARCH FOR CONTACTS', () => {
+    it('Searching for a contact', (done) => {
+        let name = "Timothy"
+        chai
+        .request(app)
+        .get('/search/'+name)
+        .end((err, response) => {
+            response.should.have.status(200);
+            response.body.should.be.a('object');
+            response.body.search_results[0].should.have.property('first_name')
+            response.body.search_results[0].should.have.property('last_name')
+            response.body.search_results[0].should.have.property('phone_number')
+            // response.body.should.have.property('message').eql('Empty phone book');
+            // response.body.should.be.eq(1);
+        // this.timeout(500);
+        done();
+        })
+    });
+
+    it('Should not access a page that does not exist', (done) => {
+        chai
+        .request(app)
+        .get('/contacts')
+        .end((err, response) => {
+            response.should.have.status(404);
 
         done();
         })
     });
 
+})
+describe('UPDATE A CONTACT', () => {
+    it('Should update a number', (done) => {
+        let contact = "+256771419370"
+
+        const new_contact = {
+            first_name : "Trevor",
+            last_name : "Angulo",
+            phone_number : "+256771419370",
+        }
+        chai
+        .request(app)
+        .put('/update/'+contact)
+        .send(new_contact)
+        .type('json')
+        .end((err, response) => {
+            response.should.have.status(200);
+            response.body['contact'].should.have.property('first_name')
+            response.body.contact.should.have.property('last_name')
+            response.body.contact.should.have.property('phone_number')
+            response.body.should.have.property('message').eql('Contact editted');
+            // response.body.should.be.eq(1);
+        // this.timeout(500);
+        done();
+        })
+    });
 
 })
+
+describe('DELETE A CONTACT', () => {
+    it('Should delete a contact', (done) => {
+        let contact = "+256771419370"
+        chai
+        .request(app)
+        .delete('/remove/'+contact)
+        .end((err, response) => {
+            response.should.have.status(200);
+            response.body.should.have.property('message').eql('Contact removed');
+            // response.body.should.be.eq(1);
+        // this.timeout(500);
+        done();
+        })
+    });
+
+})
+
+
+
 
